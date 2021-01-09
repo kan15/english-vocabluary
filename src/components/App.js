@@ -1,56 +1,57 @@
-import React from 'react';
-// import ReactDOM from 'react-dom';
-import config from '../config.js';
-import firebase from 'firebase/app';
-import 'firebase/database';
-
-if (firebase.apps.length === 0) {
-  firebase.initializeApp(config);
-}
+import React from "react";
+import firebase from "../config.js";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      dataBase: [],
+      words: [],
     };
 
-    this.getDatabase = this.getDatabase.bind(this);
+    this.getWords = this.getWords.bind(this);
     this.handleClick = this.handleClick.bind(this);
   }
 
+  /**
+   * @returns Promise that it will get data from DB
+   **/ 
+  getWords() {
+    return firebase.database().ref("words").once("value");
+  }
 
-  getDatabase() {
-    let arr;
-    firebase
-      .database()
-      .ref('words')
-      .on('value', (snapshot) => {
-        const data = snapshot.val();
-        arr = Object.entries(data);
-      });
-      console.log(arr);
-      return arr;
+  mapSnapshotToArray(snapshot) {
+    const words = snapshot.val();
+    return Object.keys(words).map((workKey) => {
+      return { key: workKey, ...words[workKey] };
+    });
   }
 
   handleClick() {
-    this.setState({
-      dataBase: this.getDatabase()
+    // at this moment we're in the loading state
+    this.getWords().then((snapshot) => {
+      // at this moment we're loaded the data and can display it
+      const words = this.mapSnapshotToArray(snapshot);
+      this.setState({
+        words,
+      });
     });
+    // TODO: catch error
   }
 
   render() {
     return (
       <div>
-        <button onClick={this.handleClick}>
-          Get Result
-        </button>
+        <button onClick={this.handleClick}>Get Result</button>
         <ul>
-          <li>{ this.state.dataBase }</li>
+          {this.state.words.map((word) => (
+            <li key={word.key}>
+              {word.eng} - {word.rus}
+            </li>
+          ))}
         </ul>
       </div>
-    )
+    );
   }
 }
 
