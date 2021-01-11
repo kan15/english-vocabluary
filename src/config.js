@@ -1,6 +1,4 @@
-// import firebase from 'firebase/app';
-// import 'firebase/database';
-import firebase from 'firebase/app';
+import firebase from "firebase";
 
 // Your web app's Firebase configuration
 const config = {
@@ -10,11 +8,8 @@ const config = {
   projectId: "english-vocabulary-2020",
   storageBucket: "english-vocabulary-2020.appspot.com",
   messagingSenderId: "1091446428671",
-  appId: "1:1091446428671:web:05dfa1446b2a41170b0dca"
+  appId: "1:1091446428671:web:05dfa1446b2a41170b0dca",
 };
 
-if (firebase.apps.length === 0) {
-  firebase.initializeApp(config);
-}
-
-export default config;
+firebase.initializeApp(config);
+export default firebase;
